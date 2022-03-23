@@ -18,7 +18,7 @@ fitness_function = fitness_func
 
 #ile chromsomĂłw w populacji
 #ile genow ma chromosom
-sol_per_pop = 10
+sol_per_pop = 100
 num_genes = 6
 
 #ile wylaniamy rodzicow do "rozmanazania" (okolo 50% populacji)
