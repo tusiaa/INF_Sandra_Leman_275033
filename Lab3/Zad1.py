@@ -67,6 +67,7 @@ for i in range(10):
     print(end - start)
     t = t + (end - start)
 
+print('Średnia')
 print(t / 10)
 
 #podsumowanie: najlepsze znalezione rozwiazanie (chromosom+ocena)
