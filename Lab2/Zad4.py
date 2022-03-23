@@ -73,9 +73,10 @@ print("Fitness value of the best solution = {solution_fitness}".format(solution_
 prediction = numpy.sum(wartosc*solution)
 print("Predicted output based on the best solution : {prediction}".format(prediction=prediction))
 
-#wyswietlenie wykresu: jak zmieniala sie ocena na przestrzeni pokolen
-ga_instance.plot_fitness()
-
 for i in range(len(przedmiot)):
     if solution[i]:
         print(przedmiot[i])
+
+#wyswietlenie wykresu: jak zmieniala sie ocena na przestrzeni pokolen
+ga_instance.plot_fitness()
+
