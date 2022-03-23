@@ -24,7 +24,7 @@ num_genes = 6
 #ile wylaniamy rodzicow do "rozmanazania" (okolo 50% populacji)
 #ile pokolen
 #ilu rodzicow zachowac (kilka procent)
-num_parents_mating = 5
+num_parents_mating = 50
 num_generations = 30
 keep_parents = 2
 
