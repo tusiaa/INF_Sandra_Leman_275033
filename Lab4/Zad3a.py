@@ -1,11 +1,13 @@
+import math
 import pyswarms as ps
+from matplotlib import pyplot as plt
 from pyswarms.utils.functions import single_obj as fx
 from pyswarms.utils.plotters import plot_cost_history
 from pyswarms.utils.plotters.plotters import plot_contour
-from pyswarms.utils.plotters.formatters import Mesher
+from pyswarms.utils.plotters.formatters import Mesher, Designer
 
 # Set-up hyperparameters
-options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
+options = {'c1': 0.5, 'c2': 0.3, 'w': 0.9}
 
 # Call instance of GlobalBestPSO
 optimizer = ps.single.GlobalBestPSO(n_particles=10, dimensions=2,
@@ -35,24 +37,26 @@ plt.show()
 
 
 # historia kosztów i pozycji
-cost_history, pos_history = optimizer.optimize(fx.easom, iters=50)
+stats = optimizer.optimize(fx.easom, iters=50)
+cost_history = optimizer.cost_history
+pos_history = optimizer.pos_history
 
 #tworzenie animacji
-m = Mesher(func=fx.easom)
-animation = plot_contour(pos_history=pos_history,
- mesher=m,
-mark=(0, 0))
+d = Designer(limits=[(1, 5), (1, 5)])
+m = Mesher(func=fx.easom, limits=[(-100, 100), (-100, 100)], delta=1)
+animation = plot_contour(pos_history=pos_history, mesher=m, designer=d, mark=(math.pi, math.pi))
 animation.save('plot1.gif', writer='imagemagick', fps=10)
 
 
 # historia kosztów i pozycji
-cost_history, pos_history = optimizer.optimize(fx.levi, iters=50)
+stats = optimizer.optimize(fx.levi, iters=50)
+cost_history = optimizer.cost_history
+pos_history = optimizer.pos_history
 
 #tworzenie animacji
-m = Mesher(func=fx.levi)
-animation = plot_contour(pos_history=pos_history,
- mesher=m,
-mark=(0, 0))
+d = Designer(limits=[(-0.01, 1.2), (-4, 6)])
+m = Mesher(func=fx.levi, limits=[(-10, 10), (-10, 10)], delta=1)
+animation = plot_contour(pos_history=pos_history, mesher=m, designer=d, mark=(1, 1))
 animation.save('plot2.gif', writer='imagemagick', fps=10)
 
 
