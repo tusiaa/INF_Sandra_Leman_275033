@@ -2,10 +2,10 @@ import pygad
 import numpy
 
 # rozwiazanie = [[[3], [3], [4], [1], [1, 1]], [[2, 1], [3], [3], [1], [3]]]
-rozwiazanie = [[[3], [4], [4], [6], [4, 2], [8], [5, 2], [5], [1, 2], [5]],
-               [[5], [3, 1], [3, 1], [6], [7], [4], [6], [4, 2], [5], [2, 2]]]
-# rozwiazanie = [[[1, 4, 3], [1, 3, 2], [1], [1, 1], [1, 1, 2], [9], [5, 3], [5], [1, 2], [1, 1, 2]],
-#                [[8], [3, 1], [1, 4], [2, 5], [2, 1, 3], [2, 1], [2], [1, 3, 2], [2, 3, 2], [2]]]
+# rozwiazanie = [[[3], [4], [4], [6], [4, 2], [8], [5, 2], [5], [1, 2], [5]],
+#                [[5], [3, 1], [3, 1], [6], [7], [4], [6], [4, 2], [5], [2, 2]]]
+rozwiazanie = [[[1, 4, 3], [1, 3, 2], [1], [1, 1], [1, 1, 2], [9], [5, 3], [5], [1, 2], [1, 1, 2]],
+               [[8], [3, 1], [1, 4], [2, 5], [2, 1, 3], [2, 1], [2], [1, 3, 2], [2, 3, 2], [2]]]
 # rozwiazanie = [[[3, 2], [1, 3, 2], [2, 1, 2, 1], [2, 1, 1], [2, 1], [1, 2, 1], [6, 6], [11],
 #                 [6, 6], [1, 1, 1], [1, 1, 1], [1, 1], [1, 1, 2, 1], [1, 1, 2], [3]],
 #                [[1, 1], [1, 1], [1, 1], [1, 1], [1, 3], [3, 3], [1, 2, 3, 3], [1, 1, 2, 1, 1, 1],
@@ -19,6 +19,7 @@ height = len(rozwiazanie[1])
 gene_space = [0, 1]
 
 # definiujemy funkcjÄ fitness
+# Sprawdza poprawność bloków, liczby bloków i liczby zamalowanych kratek
 def fitness_func(solution, solution_idx):
     fitness = 0
     # Sprawdzanie kolumn
@@ -42,8 +43,16 @@ def fitness_func(solution, solution_idx):
                 block = block + 1
             elif not solution[j*width + i] and isblock:
                 isblock = False
-                sum3 = sum3 + numpy.abs(block - rozwiazanie[0][i][place])
-                place = numpy.min([place + 1, len(rozwiazanie[0][i]) - 1])
+                if place < len(rozwiazanie[0][i]):
+                    sum3 = sum3 + numpy.abs(block - rozwiazanie[0][i][place])
+                    place = place + 1
+                else:
+                    sum3 = sum3 + block
+            if j == height - 1 and isblock:
+                if place < len(rozwiazanie[0][i]):
+                    sum3 = sum3 + numpy.abs(block - rozwiazanie[0][i][place])
+                else:
+                    sum3 = sum3 + block
         fitness = fitness - numpy.abs(sum1 - sum2) - numpy.abs(blocks - len(rozwiazanie[0][i])) - sum3
 
     # Sprawdzanie wierszy
@@ -67,8 +76,16 @@ def fitness_func(solution, solution_idx):
                 block = block + 1
             elif not solution[i*width + j] and isblock:
                 isblock = False
-                sum3 = sum3 + numpy.abs(block - rozwiazanie[1][i][place])
-                place = numpy.min([place + 1, len(rozwiazanie[1][i]) - 1])
+                if place < len(rozwiazanie[1][i]):
+                    sum3 = sum3 + numpy.abs(block - rozwiazanie[1][i][place])
+                    place = place + 1
+                else:
+                    sum3 = sum3 + block
+            if j == width - 1 and isblock:
+                if place < len(rozwiazanie[1][i]):
+                    sum3 = sum3 + numpy.abs(block - rozwiazanie[1][i][place])
+                else:
+                    sum3 = sum3 + block
         fitness = fitness - numpy.abs(sum1 - sum2) - numpy.abs(blocks - len(rozwiazanie[1][i])) - sum3
 
     return fitness
@@ -77,15 +94,15 @@ fitness_function = fitness_func
 
 # ile chromsomĂłw w populacji
 # ile genow ma chromosom
-sol_per_pop = 500
+sol_per_pop = 200
 num_genes = height * width
 
 # ile wylaniamy rodzicow do "rozmanazania" (okolo 50% populacji)
 # ile pokolen
 # ilu rodzicow zachowac (kilka procent)
-num_parents_mating = 250
-num_generations = 100
-keep_parents = 2
+num_parents_mating = 100
+num_generations = 1000
+keep_parents = 5
 
 # jaki typ selekcji rodzicow?
 # sss = steady, rws=roulette, rank = rankingowa, tournament = turniejowa
