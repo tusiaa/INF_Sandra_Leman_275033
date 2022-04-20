@@ -78,7 +78,7 @@ def fitness_func(solution):
             sum = sum + len(rozwiazanie[1][i]) - place
         fitness = fitness + sum
 
-    return fitness
+    return fitness*fitness
 
 
 def f(x):
@@ -88,7 +88,7 @@ def f(x):
 
 
 optimizer = ps.discrete.BinaryPSO(n_particles=50, dimensions=width*height, options=options)
-cost, pos = optimizer.optimize(f, iters=100, verbose=True)
+cost, pos = optimizer.optimize(f, iters=500, verbose=True)
 
 print("Parameters of the best solution : {solution}".format(solution=pos))
 print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=cost))

@@ -88,7 +88,7 @@ def fitness_func(solution):
                     sum3 = sum3 + block
         fitness = fitness + numpy.abs(sum1 - sum2) + numpy.abs(blocks - len(rozwiazanie[1][i])) + sum3
 
-    return fitness
+    return fitness*fitness
 
 
 def f(x):

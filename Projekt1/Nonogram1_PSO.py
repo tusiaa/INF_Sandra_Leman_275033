@@ -72,7 +72,7 @@ def fitness_func(solution):
                     sum = sum + block
         fitness = fitness + sum
 
-    return fitness
+    return fitness*fitness
 
 
 def f(x):
