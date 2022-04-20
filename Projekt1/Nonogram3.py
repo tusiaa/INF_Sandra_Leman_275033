@@ -2,10 +2,10 @@ import pygad
 import numpy
 
 # rozwiazanie = [[[3], [3], [4], [1], [1, 1]], [[2, 1], [3], [3], [1], [3]]]
-rozwiazanie = [[[3], [4], [4], [6], [4, 2], [8], [5, 2], [5], [1, 2], [5]],
-               [[5], [3, 1], [3, 1], [6], [7], [4], [6], [4, 2], [5], [2, 2]]]
-# rozwiazanie = [[[1, 4, 3], [1, 3, 2], [1], [1, 1], [1, 1, 2], [9], [5, 3], [5], [1, 2], [1, 1, 2]],
-#                [[8], [3, 1], [1, 4], [2, 5], [2, 1, 3], [2, 1], [2], [1, 3, 2], [2, 3, 2], [2]]]
+# rozwiazanie = [[[3], [4], [4], [6], [4, 2], [8], [5, 2], [5], [1, 2], [5]],
+#                [[5], [3, 1], [3, 1], [6], [7], [4], [6], [4, 2], [5], [2, 2]]]
+rozwiazanie = [[[1, 4, 3], [1, 3, 2], [1], [1, 1], [1, 1, 2], [9], [5, 3], [5], [1, 2], [1, 1, 2]],
+               [[8], [3, 1], [1, 4], [2, 5], [2, 1, 3], [2, 1], [2], [1, 3, 2], [2, 3, 2], [2]]]
 # rozwiazanie = [[[3, 2], [1, 3, 2], [2, 1, 2, 1], [2, 1, 1], [2, 1], [1, 2, 1], [6, 6], [11],
 #                 [6, 6], [1, 1, 1], [1, 1, 1], [1, 1], [1, 1, 2, 1], [1, 1, 2], [3]],
 #                [[1, 1], [1, 1], [1, 1], [1, 1], [1, 3], [3, 3], [1, 2, 3, 3], [1, 1, 2, 1, 1, 1],
@@ -19,19 +19,21 @@ for i in rozwiazanie[1]:
         row_blocks.append(j)
 
 # definiujemy parametry chromosomu
-gene_space = range(width*height)
+gene_space = range(width)
 
 # definiujemy funkcjÄ fitness
 # Sprawdza poprawność bloków, liczby bloków i liczby zamalowanych kratek
 def fitness_func(solution, solution_idx):
     fitness = 0
     solution2 = numpy.zeros(width*height)
-    solution.sort()
+    sol = 0
 
-    for i in range(len(solution)):
-        for j in range(row_blocks[i]):
-            if int(solution[i])+j < len(solution2):
-                solution2[int(solution[i])+j] = 1
+    for i in range(len(rozwiazanie[1])):
+        for j in range(len(rozwiazanie[1][i])):
+            for k in range(rozwiazanie[1][i][j]):
+                if int(solution[sol]) + k + i*width < len(solution2):
+                    solution2[int(solution[sol]) + k + i*width] = 1
+            sol = sol + 1
 
     # Sprawdzanie kolumn
     for i in range(width):
@@ -112,7 +114,7 @@ num_genes = len(row_blocks)
 # ile pokolen
 # ilu rodzicow zachowac (kilka procent)
 num_parents_mating = 100
-num_generations = 1000
+num_generations = 1500
 keep_parents = 5
 
 # jaki typ selekcji rodzicow?
@@ -152,11 +154,14 @@ print("Fitness value of the best solution = {solution_fitness}".format(solution_
 # tutaj dodatkowo wyswietlamy sume wskazana przez jedynki
 print("Predicted output based on the best solution :")
 solution2 = numpy.zeros(width*height)
+sol = 0
 
-for i in range(len(solution)):
-    for j in range(row_blocks[i]):
-        if int(solution[i]) + j < len(solution2):
-            solution2[int(solution[i]) + j] = 1
+for i in range(len(rozwiazanie[1])):
+    for j in range(len(rozwiazanie[1][i])):
+        for k in range(rozwiazanie[1][i][j]):
+            if int(solution[sol]) + k + i * width < len(solution2):
+                solution2[int(solution[sol]) + k + i * width] = 1
+        sol = sol + 1
 
 for i in range(height):
     for j in range(width):
