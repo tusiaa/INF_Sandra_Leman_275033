@@ -1,9 +1,10 @@
 import pygad
 import numpy
+import time
 
-# rozwiazanie = [[[3], [3], [4], [1], [1, 1]], [[2, 1], [3], [3], [1], [3]]]
-rozwiazanie = [[[3], [4], [4], [6], [4, 2], [8], [5, 2], [5], [1, 2], [5]],
-               [[5], [3, 1], [3, 1], [6], [7], [4], [6], [4, 2], [5], [2, 2]]]
+rozwiazanie = [[[3], [3], [4], [1], [1, 1]], [[2, 1], [3], [3], [1], [3]]]
+# rozwiazanie = [[[3], [4], [4], [6], [4, 2], [8], [5, 2], [5], [1, 2], [5]],
+#                [[5], [3, 1], [3, 1], [6], [7], [4], [6], [4, 2], [5], [2, 2]]]
 # rozwiazanie = [[[1, 4, 3], [1, 3, 2], [1], [1, 1], [1, 1, 2], [9], [5, 3], [5], [1, 2], [1, 1, 2]],
 #                [[8], [3, 1], [1, 4], [2, 5], [2, 1, 3], [2, 1], [2], [1, 3, 2], [2, 3, 2], [2]]]
 # rozwiazanie = [[[3, 2], [1, 3, 2], [2, 1, 2, 1], [2, 1, 1], [2, 1], [1, 2, 1], [6, 6], [11],
@@ -45,7 +46,7 @@ def fitness_func(solution, solution_idx):
                     place = place + 1
                 else:
                     sum = sum + 1
-            if j == height - 1 and isblock:
+            if j == height - 1 and isblock and solution[j*width + i]:
                 if place < len(rozwiazanie[0][i]) and block != rozwiazanie[0][i][place]:
                     sum = sum + 1
                 elif place >= len(rozwiazanie[0][i]):
@@ -73,7 +74,7 @@ def fitness_func(solution, solution_idx):
                     place = place + 1
                 else:
                     sum = sum + 1
-            if j == width - 1 and isblock:
+            if j == width - 1 and isblock and solution[i*width + j]:
                 if place < len(rozwiazanie[1][i]) and block != rozwiazanie[1][i][place]:
                     sum = sum + 1
                 elif place >= len(rozwiazanie[1][i]):
@@ -96,7 +97,7 @@ num_genes = height * width
 # ile pokolen
 # ilu rodzicow zachowac (kilka procent)
 num_parents_mating = 100
-num_generations = 100
+num_generations = 1000
 keep_parents = 5
 
 # jaki typ selekcji rodzicow?
@@ -111,37 +112,57 @@ crossover_type = "single_point"
 mutation_type = "random"
 mutation_percent_genes = numpy.ceil(100 / num_genes)
 
-# inicjacja algorytmu z powyzszymi parametrami wpisanymi w atrybuty
-ga_instance = pygad.GA(gene_space=gene_space,
-                       num_generations=num_generations,
-                       num_parents_mating=num_parents_mating,
-                       fitness_func=fitness_function,
-                       sol_per_pop=sol_per_pop,
-                       num_genes=num_genes,
-                       parent_selection_type=parent_selection_type,
-                       keep_parents=keep_parents,
-                       crossover_type=crossover_type,
-                       mutation_type=mutation_type,
-                       mutation_percent_genes=mutation_percent_genes,
-                       stop_criteria=["reach_0"])
+t = 0
+win = 0
+best = -1000
+best_sol = numpy.zeros(width*height)
+for i in range(10):
 
-# uruchomienie algorytmu
-ga_instance.run()
+# inicjacja algorytmu z powyzszymi parametrami wpisanymi w atrybuty
+    ga_instance = pygad.GA(gene_space=gene_space,
+                           num_generations=num_generations,
+                           num_parents_mating=num_parents_mating,
+                           fitness_func=fitness_function,
+                           sol_per_pop=sol_per_pop,
+                           num_genes=num_genes,
+                           parent_selection_type=parent_selection_type,
+                           keep_parents=keep_parents,
+                           crossover_type=crossover_type,
+                           mutation_type=mutation_type,
+                           mutation_percent_genes=mutation_percent_genes,
+                           stop_criteria=["reach_0"])
+
+#uruchomienie algorytmu
+    start = time.time()
+    ga_instance.run()
+    end = time.time()
+    solution, solution_fitness, solution_idx = ga_instance.best_solution()
+    print(end - start)
+    t = t + (end - start)
+    if solution_fitness == 0:
+        win = win + 1
+    if solution_fitness > best:
+        best = solution_fitness
+        best_sol = solution
+
+print('Średni czas')
+print(t / 10)
+print('Liczba poprawnych rozwiązań na 10 prób')
+print(win)
 
 # podsumowanie: najlepsze znalezione rozwiazanie (chromosom+ocena)
-solution, solution_fitness, solution_idx = ga_instance.best_solution()
-print("Parameters of the best solution : {solution}".format(solution=solution))
-print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=solution_fitness))
+print("Parameters of the best solution : {solution}".format(solution=best_sol))
+print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=best))
 
 # tutaj dodatkowo wyswietlamy sume wskazana przez jedynki
 print("Predicted output based on the best solution :")
 for i in range(height):
     for j in range(width):
-        if solution[i*width+j]:
+        if best_sol[i*width+j]:
             print('X', end=' ')
         else:
             print(' ', end=' ')
     print("")
 
-# wyswietlenie wykresu: jak zmieniala sie ocena na przestrzeni pokolen
+# wyswietlenie wykresu: jak zmieniala sie ocena na przestrzeni pokolen ostatniej próby
 ga_instance.plot_fitness()

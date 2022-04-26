@@ -1,11 +1,12 @@
+import time
 import pyswarms as ps
 import numpy
 from pyswarms.utils.plotters import plot_cost_history
 import matplotlib.pyplot as plt
 
-# rozwiazanie = [[[3], [3], [4], [1], [1, 1]], [[2, 1], [3], [3], [1], [3]]]
-rozwiazanie = [[[3], [4], [4], [6], [4, 2], [8], [5, 2], [5], [1, 2], [5]],
-               [[5], [3, 1], [3, 1], [6], [7], [4], [6], [4, 2], [5], [2, 2]]]
+rozwiazanie = [[[3], [3], [4], [1], [1, 1]], [[2, 1], [3], [3], [1], [3]]]
+# rozwiazanie = [[[3], [4], [4], [6], [4, 2], [8], [5, 2], [5], [1, 2], [5]],
+#                [[5], [3, 1], [3, 1], [6], [7], [4], [6], [4, 2], [5], [2, 2]]]
 # rozwiazanie = [[[1, 4, 3], [1, 3, 2], [1], [1, 1], [1, 1, 2], [9], [5, 3], [5], [1, 2], [1, 1, 2]],
 #                [[8], [3, 1], [1, 4], [2, 5], [2, 1, 3], [2, 1], [2], [1, 3, 2], [2, 3, 2], [2]]]
 # rozwiazanie = [[[3, 2], [1, 3, 2], [2, 1, 2, 1], [2, 1, 1], [2, 1], [1, 2, 1], [6, 6], [11],
@@ -44,7 +45,7 @@ def fitness_func(solution):
                     place = place + 1
                 else:
                     sum = sum + 1
-            if j == height - 1 and isblock:
+            if j == height - 1 and isblock and solution[j*width + i]:
                 if place < len(rozwiazanie[0][i]) and block != rozwiazanie[0][i][place]:
                     sum = sum + 1
                 elif place >= len(rozwiazanie[0][i]):
@@ -72,7 +73,7 @@ def fitness_func(solution):
                     place = place + 1
                 else:
                     sum = sum + 1
-            if j == width - 1 and isblock:
+            if j == width - 1 and isblock and solution[i*width + j]:
                 if place < len(rozwiazanie[1][i]) and block != rozwiazanie[1][i][place]:
                     sum = sum + 1
                 elif place >= len(rozwiazanie[1][i]):
@@ -90,16 +91,34 @@ def f(x):
     j = [fitness_func(x[i]) for i in range(n_particles)]
     return numpy.array(j)
 
+t = 0
+win = 0
+best = 1000000
+best_sol = numpy.zeros(width*height)
+for i in range(10):
+    start = time.time()
+    optimizer = ps.discrete.BinaryPSO(n_particles=50, dimensions=width*height, options=options)
+    cost, pos = optimizer.optimize(f, iters=1000, verbose=True)
+    end = time.time()
+    print(end - start)
+    t = t + (end - start)
+    if cost == 0:
+        win = win + 1
+    if cost < best:
+        best = cost
+        best_sol = pos
 
-optimizer = ps.discrete.BinaryPSO(n_particles=50, dimensions=width*height, options=options)
-cost, pos = optimizer.optimize(f, iters=500, verbose=True)
+print('Średni czas')
+print(t / 10)
+print('Liczba poprawnych rozwiązań na 10 prób')
+print(win)
 
-print("Parameters of the best solution : {solution}".format(solution=pos))
-print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=cost))
+print("Parameters of the best solution : {solution}".format(solution=best))
+print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=best_sol))
 print("Predicted output based on the best solution :")
 for i in range(height):
     for j in range(width):
-        if pos[i*width+j]:
+        if best_sol[i*width+j]:
             print('X', end=' ')
         else:
             print(' ', end=' ')
