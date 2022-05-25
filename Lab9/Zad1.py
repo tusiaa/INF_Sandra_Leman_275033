@@ -11,7 +11,7 @@ import nltk
 # nltk.download('wordnet')
 # nltk.download('omw-1.4')
 
-with open('article.txt') as f:
+with open('article1.txt') as f:
     article = f.read().lower()
 
 tokenized_text = word_tokenize(article)
