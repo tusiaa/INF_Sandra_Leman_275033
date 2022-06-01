@@ -1,24 +1,22 @@
+import re
 import pandas as pd
-import itertools
 from wordcloud import WordCloud
-import snscrape.modules.twitter as sntwitter
 from matplotlib import pyplot as plt
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk import word_tokenize, WordNetLemmatizer, FreqDist
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-search = '"#disney"'
+tweets = pd.read_csv("tweets/disney.csv")
+print(tweets)
 
-tweets = itertools.islice(sntwitter.TwitterSearchScraper(search).get_items(), 10000)
-
-df = pd.DataFrame(tweets)[['date', 'content']]
-df.to_csv("tweets/disney.csv")
-print(df)
-
-disney_content = pd.DataFrame(tweets)[['content']]
+disney_content = pd.DataFrame(tweets, columns=['content']).to_numpy().flatten()
+print(disney_content)
+disney_content = " ".join(disney_content).lower()
+disney_content = re.sub(r'[^a-zA-Z0-9 ]', '', disney_content)
 disney_tokenized = word_tokenize(disney_content)
 stop_words = stopwords.words("english")
+stop_words.extend(['im'])
 
 disney_filtered = []
 for w in disney_tokenized:
@@ -36,33 +34,33 @@ for w in disney_filtered:
     disney_lem.append(lem.lemmatize(w))
 
 
-print("\nTokenized:", disney_tokenized)
+print("\nTokenized:")
 print("Liczba slow:", len(disney_tokenized))
 
 fdist = FreqDist(disney_tokenized)
 print("Najczesciej wystepujace", fdist.most_common(10))
 print("Liczba slow:", len(fdist))
 
-print("\nFiltered:", disney_filtered)
+print("\nFiltered:")
 print("Liczba slow:", len(disney_filtered))
 
 fdist = FreqDist(disney_filtered)
 print("Najczesciej wystepujace", fdist.most_common(10))
 print("Liczba slow:", len(fdist))
 
-print("\nStemmed:", disney_stemmed)
+print("\nStemmed:")
 print("Liczba slow:", len(disney_stemmed))
 
 fdist = FreqDist(disney_stemmed)
 print("Najczesciej wystepujace", fdist.most_common(10))
 print("Liczba slow:", len(fdist))
 
-print("\nLemmatized:", disney_lem)
+print("\nLemmatized:")
 print("Liczba slow:", len(disney_lem))
 
 fdist = FreqDist(disney_lem)
 print("Najczesciej wystepujace", fdist.most_common(10))
-print("Liczba slow:", len(fdist))
+print("Liczba slow:", len(fdist), "\n")
 
 fdist = FreqDist(disney_lem).most_common(10)
 words = []
@@ -77,7 +75,7 @@ plt.barh(words, frequency)
 plt.savefig("charts/DisneyBarPlot")
 plt.show()
 
-wordcloud = WordCloud(stopwords=stop_words).generate(disney_content)
+wordcloud = WordCloud(stopwords=stop_words, max_words=100, background_color="white").generate(disney_content)
 
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")

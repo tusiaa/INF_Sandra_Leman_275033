@@ -1,24 +1,22 @@
+import re
 import pandas as pd
-import itertools
 from wordcloud import WordCloud
-import snscrape.modules.twitter as sntwitter
 from matplotlib import pyplot as plt
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk import word_tokenize, WordNetLemmatizer, FreqDist
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-search = '"#dreamworks"'
+tweets = pd.read_csv("tweets/dreamworks.csv")
+print(tweets)
 
-tweets = itertools.islice(sntwitter.TwitterSearchScraper(search).get_items(), 10000)
-
-df = pd.DataFrame(tweets)[['date', 'content']]
-df.to_csv("tweets/dreamworks.csv")
-print(df)
-
-dreamworks_content = pd.DataFrame(tweets)[['content']]
+dreamworks_content = pd.DataFrame(tweets, columns=['content']).to_numpy().flatten()
+print(dreamworks_content)
+dreamworks_content = " ".join(dreamworks_content).lower()
+dreamworks_content = re.sub(r'[^a-zA-Z0-9 ]', '', dreamworks_content)
 dreamworks_tokenized = word_tokenize(dreamworks_content)
 stop_words = stopwords.words("english")
+# stop_words.extend(['dreamworks'])
 
 dreamworks_filtered = []
 for w in dreamworks_tokenized:
@@ -35,28 +33,28 @@ dreamworks_lem = []
 for w in dreamworks_filtered:
     dreamworks_lem.append(lem.lemmatize(w))
 
-print("\nTokenized:", dreamworks_tokenized)
+print("\nTokenized:")
 print("Liczba slow:", len(dreamworks_tokenized))
 
 fdist = FreqDist(dreamworks_tokenized)
 print("Najczesciej wystepujace", fdist.most_common(10))
 print("Liczba slow:", len(fdist))
 
-print("\nFiltered:", dreamworks_filtered)
+print("\nFiltered:")
 print("Liczba slow:", len(dreamworks_filtered))
 
 fdist = FreqDist(dreamworks_filtered)
 print("Najczesciej wystepujace", fdist.most_common(10))
 print("Liczba slow:", len(fdist))
 
-print("\nStemmed:", dreamworks_stemmed)
+print("\nStemmed:")
 print("Liczba slow:", len(dreamworks_stemmed))
 
 fdist = FreqDist(dreamworks_stemmed)
 print("Najczesciej wystepujace", fdist.most_common(10))
 print("Liczba slow:", len(fdist))
 
-print("\nLemmatized:", dreamworks_lem)
+print("\nLemmatized:")
 print("Liczba slow:", len(dreamworks_lem))
 
 fdist = FreqDist(dreamworks_lem)
@@ -76,7 +74,7 @@ plt.barh(words, frequency)
 plt.savefig("charts/DreamworksBarPlot")
 plt.show()
 
-wordcloud = WordCloud(stopwords=stop_words).generate(dreamworks_content)
+wordcloud = WordCloud(stopwords=stop_words, max_words=100, background_color="white").generate(dreamworks_content)
 
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
