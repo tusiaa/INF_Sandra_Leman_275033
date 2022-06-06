@@ -13,7 +13,9 @@ dreamworks_content_array = pd.DataFrame(tweets, columns=['content']).to_numpy().
 sid = SentimentIntensityAnalyzer()
 lem = WordNetLemmatizer()
 stop_words = stopwords.words("english")
-stop_words.extend(['dreamworks', 'im'])
+stop_words.extend(['dreamworks', 'im', 'show', 'people', 'dont', 'didnt', 'movie', 'disney', 'disneys', 'one', 'lol',
+                   'know', 'cant', 'get', 'got', 'make', 'made', 'think', 'going', 'also', 'would', 'film', 'guy', '2',
+                   'thing', 'go', 'see', 'say', 'said', 'thats', 'youre', 'theyre', 'us', 'animation', 'movies'])
 
 neg = []
 pos = []
@@ -56,7 +58,7 @@ plt.barh(words, frequency)
 plt.savefig("charts/DreamworksNegBarPlot")
 plt.show()
 
-wordcloud = WordCloud(stopwords=stop_words, max_words=100, background_color="white").generate(neg)
+wordcloud = WordCloud(stopwords=stop_words, max_words=30, background_color="white").generate(neg)
 
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
@@ -89,7 +91,7 @@ plt.barh(words, frequency)
 plt.savefig("charts/DreamworksPosBarPlot")
 plt.show()
 
-wordcloud = WordCloud(stopwords=stop_words, max_words=100, background_color="white").generate(pos)
+wordcloud = WordCloud(stopwords=stop_words, max_words=30, background_color="white").generate(pos)
 
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
@@ -123,7 +125,7 @@ plt.barh(words, frequency)
 plt.savefig("charts/DreamworksNeuBarPlot")
 plt.show()
 
-wordcloud = WordCloud(stopwords=stop_words, max_words=100, background_color="white").generate(neu)
+wordcloud = WordCloud(stopwords=stop_words, max_words=30, background_color="white").generate(neu)
 
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
